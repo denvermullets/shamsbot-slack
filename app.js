@@ -1,6 +1,9 @@
 const config = require('dotenv').config();
 const { App } = require('@slack/bolt');
 
+const slackURL = 'https://slack.com/api/chat.postMessage';
+const botToken = process.env.SLACK_BOT_TOKEN
+const axios = require('axios');
 const needle = require('needle');
 const TOKEN = process.env.TWITTER_BEARER_TOKEN;
 const rulesURL = 'https://api.twitter.com/2/tweets/search/stream/rules';
@@ -97,15 +100,75 @@ function streamTweets() {
   stream.on('data', (data) => {
     try {
       const json = JSON.parse(data);
-      // sendToSlack(json);
+      sendToSlack(json);
       console.log(json);
+      console.log(json.includes.users)
     } catch (error) {
       // twitter sends an empty response to signify no new tweets
       // it seems like after a short time the node app will just fail after
       // getting so many empty responses, which is less than ideal
-      console.log('no new tweets found');
+      // console.log('no new tweets found');
+      console.log(error);
     }
   });
+}
+
+// channel: '#shams',
+// "text": `https://twitter.com/${json.includes.users[0].username}/status/${json.data.id}`
+
+async function sendToSlack(json) {
+  const res = await axios.post(
+    slackURL,
+    {
+      channel: '#shams',
+ 	"blocks": [
+		{
+			"type": "header",
+			"text": {
+				"type": "plain_text",
+				"text": "New Tweet",
+				"emoji": true
+			}
+		},
+		{
+			"type": "section",
+			"fields": [
+				{
+					"type": "mrkdwn",
+					"text": `https://twitter.com/${json.includes.users[0].username}/status/${json.data.id}`
+				}
+			]
+		},
+		{
+			"type": "actions",
+			"elements": [
+				{
+					"type": "button",
+					"text": {
+						"type": "plain_text",
+						"emoji": true,
+						"text": "Approve"
+					},
+					"style": "primary",
+					"value": "ryan"
+				},
+				{
+					"type": "button",
+					"text": {
+						"type": "plain_text",
+						"emoji": true,
+						"text": "Reject"
+					},
+					"style": "danger",
+					"value": "click_me_123"
+				}
+			]
+		}
+	]
+},
+
+    { headers: { authorization: `Bearer ${botToken}` } }
+  );
 }
 
 // initialize slack app w/token & secret key
@@ -118,6 +181,12 @@ const app = new App({
 
 app.message('hello', async ({ message, say }) => {
   await say(`sup buddy`);
+});
+
+// Listens to actions triggered with action_id of “user_select”
+app.action('ryan', async ({ ack, respond }) => {
+  await ack();
+  await say(`You selected death`);
 });
 
 (async () => {
