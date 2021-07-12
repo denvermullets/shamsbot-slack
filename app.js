@@ -30,7 +30,7 @@ const rules = [
   { value: 'from:TheSteinLine' },
   { value: 'from:ChrisBHaynes' },
   { value: 'from:espn_macmahon' },
-  // { value: 'from:MarcJSpears' },
+  { value: 'from:playpickup_' },
   // { value: 'from:MarcJSpears' },
   // { value: 'from:MarcJSpears' },
   // { value: 'from:MarcJSpears' },
