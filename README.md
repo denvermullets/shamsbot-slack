@@ -3,8 +3,10 @@ pulling down tweets and throwing it into slack
 
 ### How to use
 
-`npm install`
-`npm start`
+```
+npm install
+npm start
+```
 
 This Boltjs App will connect to Twitter and pull down live tweets from given users and output to Slack to specific channel. Once it's in Slack, users will be able to take action on those.
 
