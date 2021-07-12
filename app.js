@@ -1,9 +1,7 @@
 const config = require('dotenv').config();
 const { App } = require('@slack/bolt');
 
-const slackURL = 'https://slack.com/api/chat.postMessage';
 const botToken = process.env.SLACK_BOT_TOKEN
-const axios = require('axios');
 const needle = require('needle');
 const TOKEN = process.env.TWITTER_BEARER_TOKEN;
 const rulesURL = 'https://api.twitter.com/2/tweets/search/stream/rules';
@@ -37,10 +35,10 @@ const rules = [
   // { value: 'from:MarcJSpears' },
   // { value: 'from:MarcJSpears' },
   // { value: 'from:MarcJSpears' },
+
+  // these are the max # of rules you can have in place right now
 ];
 
-
-// get rules
 async function getRules() {
   const response = await needle('get', rulesURL, {
     headers: {
@@ -51,7 +49,6 @@ async function getRules() {
   return response.body;
 }
 
-// set rules
 async function setRules() {
   const data = {
     add: rules,
@@ -67,7 +64,6 @@ async function setRules() {
   return response.body;
 }
 
-// delete rules
 async function deleteRules(rules) {
   if (!Array.isArray(rules.data)) {
     return null;
@@ -107,22 +103,18 @@ function streamTweets() {
       // twitter sends an empty response to signify no new tweets
       // it seems like after a short time the node app will just fail after
       // getting so many empty responses, which is less than ideal
-      // console.log('no new tweets found');
       console.log(error);
     }
   });
 }
 
-// channel: '#shams',
-// "text": `https://twitter.com/${json.includes.users[0].username}/status/${json.data.id}`
-
 async function sendToSlack(json) {
-  const res = await axios.post(
-    slackURL,
-    {
+  try {
+    const result = await app.client.chat.postMessage({
+      token: botToken,
       channel: '#shams',
- 	"blocks": [
-		{
+      blocks: [
+        {
 			"type": "header",
 			"text": {
 				"type": "plain_text",
@@ -130,79 +122,150 @@ async function sendToSlack(json) {
 				"emoji": true
 			}
 		},
-		{
-			"type": "section",
-			"fields": [
-				{
-					"type": "mrkdwn",
-					"text": `https://twitter.com/${json.includes.users[0].username}/status/${json.data.id}`
-				}
-			]
-		},
-		{
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `https://twitter.com/${json.includes.users[0].username}/status/${json.data.id}`
+          },
+        },
+        {
 			"type": "actions",
+			"block_id": "actionblock789",
 			"elements": [
-				{
+        {
 					"type": "button",
 					"text": {
 						"type": "plain_text",
-						"emoji": true,
-						"text": "Approve"
+						"text": "Graded"
 					},
-					"style": "primary",
-					"value": "ryan"
+          "style": "primary",
+          "action_id": 'button_graded',
+					"value": "button_graded"
 				},
-				{
+        {
 					"type": "button",
 					"text": {
 						"type": "plain_text",
-						"emoji": true,
-						"text": "Reject"
+						"text": "Closed"
 					},
-					"style": "danger",
-					"value": "click_me_123"
-				}
+          // "style": "primary",
+          "action_id": 'button_closed',
+					"value": "button_closed"
+				},
+        {
+					"type": "button",
+					"text": {
+						"type": "plain_text",
+						"text": "Delete Tweet"
+					},
+          "style": "danger",
+          "action_id": 'button_delete',
+					"value": "button_delete"
+				},
+
 			]
 		}
-	]
-},
+      ],
+      // Text in the notification
+      text: `New Tweet From: ${json.includes.users[0].username}`
+    });
+    console.log(result);
+  }
+  catch (error) {
+    console.error(error);
+  }
 
-    { headers: { authorization: `Bearer ${botToken}` } }
-  );
 }
 
 // initialize slack app w/token & secret key
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
-  // socketMode: true,
   appToken: process.env.SLACK_APP_TOKEN,
 });
 
 app.message('hello', async ({ message, say }) => {
-  await say(`sup buddy`);
+  await say(`sup buddy  <@${message.user}>`);
+
 });
 
-// Listens to actions triggered with action_id of “user_select”
-app.action('ryan', async ({ ack, respond }) => {
-  await ack();
-  await say(`You selected death`);
+app.action('button_closed', async ({ ack, body, context }) => {
+  ack();
+
+  try {
+    const result = await app.client.chat.update({
+      token: context.botToken,
+      ts: body.message.ts,
+      channel: body.channel.id,
+      blocks: [
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `Closed by <@${body.user.name}>`
+          }
+        }
+      ],
+      text: 'Closed'
+    });
+    console.log(result);
+  }
+  catch (error) {
+    console.error(error);
+  }
+});
+
+app.action('button_graded', async ({ ack, body, context }) => {
+  ack();
+
+  try {
+    const result = await app.client.chat.update({
+      token: context.botToken,
+      ts: body.message.ts,
+      channel: body.channel.id,
+      blocks: [
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `Graded by <@${body.user.name}>`
+          }
+        }
+      ],
+      text: 'Graded'
+    });
+    console.log(result);
+  }
+  catch (error) {
+    console.error(error);
+  }
+});
+
+app.action('button_delete', async ({ ack, body, context }) => {
+  ack();
+
+  try {
+    const result = await app.client.chat.delete({
+      token: context.botToken,
+      ts: body.message.ts,
+      channel: body.channel.id,
+    });
+    console.log(result);
+  }
+  catch (error) {
+    console.error(error);
+  }
 });
 
 (async () => {
-  // Start your app
   await app.start(process.env.PORT || 3000);
 
   let currentRules;
-
+  // get / clear / set rules for twitter results and open stream after bolt app is running
   try {
-    // get our current list of rules
     currentRules = await getRules();
-
-    // let's clear what rules have been set (just in case there's a change)
     await deleteRules(currentRules);
-
-    // set new rules with twitter
     await setRules();
   } catch (error) {
     console.log(error);
@@ -212,68 +275,3 @@ app.action('ryan', async ({ ack, respond }) => {
 
   console.log('⚡️ Bolt app is running!');
 })();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// async function sendToSlack(json) {
-//   const res = await axios.post(
-//     slackURL,
-//     {
-//       type: 'interactive_message',
-//       channel: '#shamsbot_test',
-//       text: `https://twitter.com/${json.data.author_id}/status/${json.data.id}`,
-
-//       // removing attachments for now until routes are set up properly
-//       // attachments: [
-//       //   {
-//       //     fallback: 'Unsuccessful Tweet',
-//       //     callback_id: 'shams_fail',
-//       //     color: '#3AA3E3',
-//       //     attachment_type: 'default',
-//       //     actions: [
-//       //       {
-//       //         name: 'tweet',
-//       //         text: 'Graded',
-//       //         style: 'primary',
-//       //         type: 'button',
-//       //         value: 'graded',
-//       //         response_type: 'ephemeral',
-//       //         replace_original: true,
-//       //         delete_original: true,
-//       //       },
-//       //       {
-//       //         name: 'tweet',
-//       //         text: 'Ignore',
-//       //         style: 'danger',
-//       //         type: 'button',
-//       //         value: 'ignore',
-//       //       },
-//       //       {
-//       //         name: 'tweet',
-//       //         text: 'Close',
-//       //         type: 'button',
-//       //         value: 'closed',
-//       //       },
-//       //     ],
-//       //   },
-//       // ],
-//     },
-//     { headers: { authorization: `Bearer ${botToken}` } }
-//   );
-// }
-
-// (async () => {
-
-// })();
