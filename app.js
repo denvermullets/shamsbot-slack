@@ -158,7 +158,7 @@ async function sendToSlack(json) {
 					"type": "button",
 					"text": {
 						"type": "plain_text",
-						"text": "Graded"
+						"text": "Prop Created"
 					},
           "style": "primary",
           "action_id": 'button_prop_made',
