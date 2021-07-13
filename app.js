@@ -140,7 +140,7 @@ async function sendToSlack(json) {
 						"type": "plain_text",
 						"text": "Graded"
 					},
-          "style": "primary",
+          // "style": "primary",
           "action_id": 'button_graded',
 					"value": "button_graded"
 				},
@@ -163,6 +163,16 @@ async function sendToSlack(json) {
           "style": "danger",
           "action_id": 'button_delete',
 					"value": "button_delete"
+        },
+        {
+					"type": "button",
+					"text": {
+						"type": "plain_text",
+						"text": "Graded"
+					},
+          "style": "primary",
+          "action_id": 'button_prop_made',
+					"value": "button_prop_made"
 				},
 
 			]
@@ -235,6 +245,32 @@ app.action('button_graded', async ({ ack, body, context }) => {
         }
       ],
       text: 'Graded'
+    });
+    console.log(result);
+  }
+  catch (error) {
+    console.error(error);
+  }
+});
+
+app.action('button_prop_made', async ({ ack, body, context }) => {
+  ack();
+
+  try {
+    const result = await app.client.chat.update({
+      token: context.botToken,
+      ts: body.message.ts,
+      channel: body.channel.id,
+      blocks: [
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `Prop(s) created by <@${body.user.name}>`
+          }
+        }
+      ],
+      text: 'Props Created'
     });
     console.log(result);
   }
