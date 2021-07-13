@@ -1,6 +1,7 @@
 const config = require('dotenv').config();
 const { App } = require('@slack/bolt');
 
+const CHANNEL = process.env.CHANNEL
 const botToken = process.env.SLACK_BOT_TOKEN
 const needle = require('needle');
 const TOKEN = process.env.TWITTER_BEARER_TOKEN;
