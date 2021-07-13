@@ -113,7 +113,7 @@ async function sendToSlack(json) {
   try {
     const result = await app.client.chat.postMessage({
       token: botToken,
-      channel: '#shams',
+      channel: `#${CHANNEL}`,
       blocks: [
         {
 			"type": "header",
