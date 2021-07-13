@@ -158,22 +158,22 @@ async function sendToSlack(json) {
 					"type": "button",
 					"text": {
 						"type": "plain_text",
-						"text": "Delete Tweet"
-					},
-          "style": "danger",
-          "action_id": 'button_delete',
-					"value": "button_delete"
-        },
-        {
-					"type": "button",
-					"text": {
-						"type": "plain_text",
 						"text": "Graded"
 					},
           "style": "primary",
           "action_id": 'button_prop_made',
 					"value": "button_prop_made"
-				},
+        },
+        {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "text": "Delete Tweet"
+        },
+          "style": "danger",
+          "action_id": 'button_delete',
+          "value": "button_delete"
+        },
 
 			]
 		}
