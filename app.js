@@ -10,7 +10,7 @@ const streamURL =
   'https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=author_id';
 
 const rules = [
-  // { value: 'from:denvermullets' },
+  { value: 'from:nba' },
   { value: 'from:ShamsCharania' },
   { value: 'from:wojespn' },
   { value: 'from:MarcJSpears' },
@@ -31,11 +31,11 @@ const rules = [
   { value: 'from:TheSteinLine' },
   { value: 'from:ChrisBHaynes' },
   { value: 'from:espn_macmahon' },
-  // { value: 'from:playpickup_' },
-  // { value: 'from:MarcJSpears' },
-  // { value: 'from:MarcJSpears' },
-  // { value: 'from:MarcJSpears' },
-  // { value: 'from:MarcJSpears' },
+  { value: 'from:BleacherReport' },
+  { value: 'from:espn' },
+  { value: 'from:SInow' },
+  { value: 'from:br_betting' },
+  { value: 'from:TheAthletic' },
 
   // these are the max # of rules you can have in place right now
 ];
