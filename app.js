@@ -15,7 +15,7 @@ const rules = [
   { value: 'from:wojespn' },
   { value: 'from:MarcJSpears' },
   { value: 'from:JeffPassan' },
-  { value: 'from:Ken_Rosenthal' },
+  // { value: 'from:Ken_Rosenthal' },
   { value: 'from:JonHeyman' },
   { value: 'from:BNightengale' },
   { value: 'from:adamschefter' },
