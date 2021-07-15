@@ -10,6 +10,8 @@ const streamURL =
   'https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=author_id';
 
 const rules = [
+  // DO NOT USE EVER - the nba apparently has a bot that just
+  // mentions EVERYONE and sends them a tweet to the ad of the day
   // { value: 'from:nba -is:retweet -is:reply' },
   { value: 'from:ShamsCharania -is:retweet -is:reply' },
   { value: 'from:wojespn -is:retweet -is:reply' },
@@ -34,7 +36,7 @@ const rules = [
   { value: 'from:BleacherReport -is:retweet -is:reply' },
   { value: 'from:espn -is:retweet -is:reply' },
   { value: 'from:SInow -is:retweet -is:reply' },
-  // { value: 'from:br_betting' },
+  { value: 'from:br_betting -is:retweet -is:reply' },
   { value: 'from:TheAthletic -is:retweet -is:reply' },
 
   // these are the max # of rules you can have in place right now
