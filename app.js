@@ -10,7 +10,7 @@ const streamURL =
   'https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=author_id';
 
 const rules = [
-  { value: 'from:nba -is:retweet -is:reply' },
+  // { value: 'from:nba -is:retweet -is:reply' },
   { value: 'from:ShamsCharania -is:retweet -is:reply' },
   { value: 'from:wojespn -is:retweet -is:reply' },
   { value: 'from:MarcJSpears -is:retweet -is:reply' },
